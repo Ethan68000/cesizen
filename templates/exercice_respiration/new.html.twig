@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New ExerciceRespiration{% endblock %}
+
+{% block body %}
+    <h1>Create new ExerciceRespiration</h1>
+
+    {{ include('exercice_respiration/_form.html.twig') }}
+
+    <a href="{{ path('app_exercice_respiration_index') }}">back to list</a>
+{% endblock %}

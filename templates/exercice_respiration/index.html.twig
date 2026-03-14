@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ExerciceRespiration index{% endblock %}
+
+{% block body %}
+    <h1>ExerciceRespiration index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>NameSeries</th>
+                <th>TimeInspiration</th>
+                <th>TimeApnea</th>
+                <th>TimeExpiration</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for exercice_respiration in exercice_respirations %}
+            <tr>
+                <td>{{ exercice_respiration.id }}</td>
+                <td>{{ exercice_respiration.nameSeries }}</td>
+                <td>{{ exercice_respiration.timeInspiration }}</td>
+                <td>{{ exercice_respiration.timeApnea }}</td>
+                <td>{{ exercice_respiration.timeExpiration }}</td>
+                <td>
+                    <a href="{{ path('app_exercice_respiration_show', {'id': exercice_respiration.id}) }}">show</a>
+                    <a href="{{ path('app_exercice_respiration_edit', {'id': exercice_respiration.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_exercice_respiration_new') }}">Create new</a>
+{% endblock %}
