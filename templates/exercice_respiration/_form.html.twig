@@ -1,4 +1,23 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
+    {{ form_row(form.nameSeries) }}
+    
+    <div>
+        {{ form_label(form.timeInspiration) }}
+        {{ form_widget(form.timeInspiration, {'attr': {'min': 1}}) }}
+        {{ form_errors(form.timeInspiration) }}
+    </div>
+
+    <div>
+        {{ form_label(form.timeApnea) }}
+        {{ form_widget(form.timeApnea, {'attr': {'min': 0}}) }}
+        {{ form_errors(form.timeApnea) }}
+    </div>
+
+    <div>
+        {{ form_label(form.timeExpiration) }}
+        {{ form_widget(form.timeExpiration, {'attr': {'min': 1}}) }}
+        {{ form_errors(form.timeExpiration) }}
+    </div>
+
     <button class="btn">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}

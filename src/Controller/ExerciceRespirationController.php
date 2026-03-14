@@ -78,4 +78,12 @@ final class ExerciceRespirationController extends AbstractController
 
         return $this->redirectToRoute('app_exercice_respiration_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/{id}/launch', name: 'app_exercice_respiration_launch', methods: ['GET'])]
+    public function launch(ExerciceRespiration $exerciceRespiration): Response
+    {
+        return $this->render('exercice_respiration/launch.html.twig', [
+            'exercice_respiration' => $exerciceRespiration,
+        ]);
+    }
 }
