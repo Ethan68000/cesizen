@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un fichier — {{ informations.title }}{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h1 class="h3 fw-bold mb-4">
+            Ajouter un fichier à "{{ informations.title }}"
+        </h1>
+
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type }}">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
+
+        <div class="card shadow-sm border-0 rounded-4 p-4">
+            <form method="post" enctype="multipart/form-data">
+                <input type="hidden" name="_token" value="{{ csrf_token('upload') }}">
+                <div class="mb-3">
+                    <label class="form-label">Fichier</label>
+                    <input type="file" name="file" class="form-control" accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.mp4,.mpeg,.mov,.webm" required>
+                    <small class="text-muted">Formats acceptés : JPEG, PNG, GIF, WEBP, PDF, MP4, MPEG, MOV, WEBM</small>
+                </div>
+                <button type="submit" class="btn btn-success w-100">Uploader</button>
+            </form>
+        </div>
+
+        <a href="{{ path('app_informations_show', {id: informations.id}) }}" class="btn btn-outline-secondary mt-3">
+            Retour
+        </a>
+    </div>
+</div>
+{% endblock %}
