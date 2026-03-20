@@ -5,6 +5,24 @@
 {% block body %}
     <h1>ExerciceRespiration index</h1>
 
+    <!-- Boutons export/import -->
+    <div class="mb-3 d-flex gap-2">
+        <a href="{{ path('app_exercice_respiration_export') }}" class="btn btn-outline-success">
+            Exporter tout les exercices en JSON
+        </a>
+
+        <form method="post" action="{{ path('app_exercice_respiration_import') }}" enctype="multipart/form-data" class="d-flex gap-2">
+            <input type="file" name="json_file" accept=".json" class="form-control" required>
+            <button type="submit" class="btn btn-outline-primary">Importer JSON</button>
+        </form>
+    </div>
+
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ type }}">{{ message }}</div>
+        {% endfor %}
+    {% endfor %}
+
     <table class="table">
         <thead>
             <tr>
@@ -28,6 +46,7 @@
                     <a href="{{ path('app_exercice_respiration_show', {'id': exercice_respiration.id}) }}">show</a>
                     <a href="{{ path('app_exercice_respiration_edit', {'id': exercice_respiration.id}) }}">edit</a>
                     <a href="{{ path('app_exercice_respiration_launch', {'id': exercice_respiration.id}) }}">lancer</a>
+                    <a href="{{ path('app_exercice_respiration_export_one', {'id': exercice_respiration.id}) }}">exporter</a>
                 </td>
             </tr>
         {% else %}
