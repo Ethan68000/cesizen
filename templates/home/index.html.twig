@@ -3,8 +3,68 @@
 {% block title %}Accueil — CESIZen{% endblock %}
 
 {% block body %}
-<div class="container text-center py-5">
-    <h1 class="display-4 fw-bold">Bonjour   </h1>
-    <p class="lead text-muted">Bienvenue sur CESIZen, l'application de votre santé mentale.</p>
-</div>
+
+    <!-- Banner -->
+    <div class="section-banner text-center">
+        <h1 class="fw-bold fs-2">👋 Bonjour, bienvenue sur CESIZen</h1>
+        <p class="mb-0 fs-5">L'application de votre santé mentale</p>
+    </div>
+
+    <!-- Section Informations -->
+    <h2 class="text-white fw-bold mb-3">
+        <i class="bi bi-info-circle me-2"></i>Découvrez nos informations
+    </h2>
+    <div class="row g-4 mb-5">
+        {% for information in informations %}
+        <div class="col-md-4">
+            <div class="card card-cesizen h-100 p-3">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">{{ information.title }}</h5>
+                    <p class="card-text" style="opacity:0.85;">{{ information.description|slice(0, 100) }}...</p>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{{ path('app_informations_show', {id: information.id}) }}" class="btn btn-cesizen btn-sm">
+                        <i class="bi bi-eye me-1"></i> Lire
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Section Exercices -->
+    <h2 class="text-white fw-bold mb-3">
+        <i class="bi bi-lungs me-2"></i>Découvrez nos exercices de respiration
+    </h2>
+    <div class="row g-4 mb-4">
+        {% for exercice in exercices %}
+        <div class="col-md-4">
+            <div class="card card-cesizen h-100 p-3">
+                <div class="card-body text-center">
+                    <i class="bi bi-wind display-4 mb-2"></i>
+                    <h5 class="fw-bold">{{ exercice.nameSeries }}</h5>
+                    <p class="mb-1" style="opacity:0.85;">
+                        <i class="bi bi-arrow-up-circle"></i> {{ exercice.timeInspiration }}s
+                        {% if exercice.timeApnea > 0 %}
+                            &nbsp;<i class="bi bi-pause-circle"></i> {{ exercice.timeApnea }}s
+                        {% endif %}
+                        &nbsp;<i class="bi bi-arrow-down-circle"></i> {{ exercice.timeExpiration }}s
+                    </p>
+                </div>
+                <div class="card-footer bg-transparent border-0 text-center">
+                    <a href="{{ path('app_exercice_respiration_launch', {id: exercice.id}) }}" class="btn btn-cesizen-primary btn-sm">
+                        <i class="bi bi-play-fill me-1"></i> Lancer
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-center">
+        <a href="{{ path('app_exercice_respiration_new') }}" class="btn btn-cesizen-primary px-5">
+            <i class="bi bi-plus-circle me-2"></i> Créer votre exercice
+        </a>
+    </div>
+
 {% endblock %}

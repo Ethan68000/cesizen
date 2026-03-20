@@ -1,41 +1,55 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Informations index{% endblock %}
+{% block title %}Informations — CESIZen{% endblock %}
 
 {% block body %}
-    <h1>Informations index</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Title</th>
-                <th>Slug</th>
-                <th>Description</th>
-                <th>CreationDate</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
+    <!-- Banner -->
+    <div class="section-banner text-center">
+        <h1 class="fw-bold fs-2"><i class="bi bi-info-circle me-2"></i>Informations</h1>
+        <p class="mb-0 fs-5">Vous êtes sur la page d'informations, découvrez nos contenus</p>
+    </div>
+
+    {% if is_granted('ROLE_ADMIN') %}
+    <div class="mb-4 text-end">
+        <a href="{{ path('app_informations_new') }}" class="btn btn-cesizen-primary">
+            <i class="bi bi-plus-circle me-1"></i> Créer une information
+        </a>
+    </div>
+    {% endif %}
+
+    <div class="row g-4">
         {% for information in informations %}
-            <tr>
-                <td>{{ information.id }}</td>
-                <td>{{ information.title }}</td>
-                <td>{{ information.slug }}</td>
-                <td>{{ information.description }}</td>
-                <td>{{ information.creationDate ? information.creationDate|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_informations_show', {'id': information.id}) }}">show</a>
-                    <a href="{{ path('app_informations_edit', {'id': information.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">no records found</td>
-            </tr>
+        <div class="col-md-4">
+            <div class="card card-cesizen h-100 p-3">
+                <div class="card-body">
+                    <h5 class="fw-bold">{{ information.title }}</h5>
+                    <p style="opacity:0.85;">{{ information.description|slice(0, 120) }}...</p>
+                    <small style="opacity:0.6;">
+                        <i class="bi bi-calendar me-1"></i>
+                        {{ information.creationDate|date('d/m/Y') }}
+                    </small>
+                </div>
+                <div class="card-footer bg-transparent border-0 d-flex gap-2 flex-wrap">
+                    <a href="{{ path('app_informations_show', {id: information.id}) }}" class="btn btn-cesizen btn-sm">
+                        <i class="bi bi-eye me-1"></i> Lire
+                    </a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_informations_edit', {id: information.id}) }}" class="btn btn-cesizen btn-sm">
+                            <i class="bi bi-pencil me-1"></i> Modifier
+                        </a>
+                        <form method="post" action="{{ path('app_informations_delete', {id: information.id}) }}"
+                              onsubmit="return confirm('Supprimer cette information ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ information.id) }}">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash me-1"></i> Supprimer
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
         {% endfor %}
-        </tbody>
-    </table>
+    </div>
 
-    <a href="{{ path('app_informations_new') }}">Create new</a>
 {% endblock %}

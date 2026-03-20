@@ -10,23 +10,155 @@
         <!-- Bootstrap Icons -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
+        <style>
+            body {
+                background: linear-gradient(90deg, #004aad, #cb6ce6);
+                min-height: 100vh;
+                font-family: 'Segoe UI', sans-serif;
+            }
+
+            .navbar-cesizen {
+                background: rgba(0, 0, 0, 0.25);
+                backdrop-filter: blur(10px);
+                border-bottom: 1px solid rgba(255,255,255,0.15);
+            }
+
+            .navbar-cesizen .navbar-brand,
+            .navbar-cesizen .nav-link {
+                color: #fff !important;
+                font-weight: 500;
+            }
+
+            .navbar-cesizen .nav-link:hover {
+                color: #e0c9ff !important;
+            }
+
+            .card-cesizen {
+                background: rgba(255, 255, 255, 0.15);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255,255,255,0.25);
+                border-radius: 16px;
+                color: #fff;
+                transition: transform 0.2s;
+            }
+
+            .card-cesizen:hover {
+                transform: translateY(-4px);
+            }
+
+            .section-banner {
+                background: rgba(255,255,255,0.15);
+                backdrop-filter: blur(8px);
+                border: 1px solid rgba(255,255,255,0.2);
+                border-radius: 16px;
+                color: #fff;
+                padding: 1.5rem 2rem;
+                margin-bottom: 2rem;
+            }
+
+            .btn-cesizen {
+                background: rgba(255,255,255,0.25);
+                border: 1px solid rgba(255,255,255,0.4);
+                color: #fff;
+                border-radius: 30px;
+                padding: 6px 20px;
+            }
+
+            .btn-cesizen:hover {
+                background: rgba(255,255,255,0.4);
+                color: #fff;
+            }
+
+            .btn-cesizen-primary {
+                background: #fff;
+                border: none;
+                color: #004aad;
+                border-radius: 30px;
+                padding: 8px 24px;
+                font-weight: 600;
+            }
+
+            .btn-cesizen-primary:hover {
+                background: #e0c9ff;
+                color: #004aad;
+            }
+
+            footer {
+                background: rgba(0,0,0,0.2);
+                color: rgba(255,255,255,0.7);
+                text-align: center;
+                padding: 1rem;
+                margin-top: 3rem;
+            }
+        </style>
+
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
 
         <!-- Navbar -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+        <nav class="navbar navbar-expand-lg navbar-cesizen shadow-sm">
             <div class="container">
-                <a class="navbar-brand fw-bold" href="{{ path('app_home') }}">
+                <a class="navbar-brand fw-bold fs-4" href="{{ path('app_home') }}">
                     <i class="bi bi-wind"></i> CESIZen
                 </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navMenu">
+                    <ul class="navbar-nav ms-auto gap-2">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_informations_index') }}">
+                                <i class="bi bi-info-circle"></i> Informations
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_exercice_respiration_index') }}">
+                                <i class="bi bi-lungs"></i> Exercices de respiration
+                            </a>
+                        </li>
+                        {% if app.user %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('app_logout') }}">
+                                    <i class="bi bi-box-arrow-right"></i> Déconnexion ({{ app.user.userIdentifier }})
+                                </a>
+                            </li>
+                            {% if is_granted('ROLE_ADMIN') %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('admin') }}">
+                                    <i class="bi bi-gear"></i> Admin
+                                </a>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('app_login') }}">
+                                    <i class="bi bi-person"></i> Connexion
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
             </div>
         </nav>
 
         <!-- Contenu -->
         <main class="container py-4">
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ type == 'success' ? 'success' : 'danger' }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
             {% block body %}{% endblock %}
         </main>
+
+        <footer>
+            <p class="mb-0">© 2024 CESIZen — L'application de votre santé mentale</p>
+        </footer>
 
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
