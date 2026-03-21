@@ -47,6 +47,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $creationDate = null;
 
+    #[ORM\Column]
+    private ?bool $isActive = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -172,6 +175,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCreationDate(\DateTime $creationDate): static
     {
         $this->creationDate = $creationDate;
+
+        return $this;
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }

@@ -7,10 +7,11 @@ use App\Form\ExerciceRespirationType;
 use App\Repository\ExerciceRespirationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/exercice/respiration')]
 final class ExerciceRespirationController extends AbstractController
@@ -24,6 +25,7 @@ final class ExerciceRespirationController extends AbstractController
     }
 
     #[Route('/new', name: 'app_exercice_respiration_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $exerciceRespiration = new ExerciceRespiration();
@@ -52,6 +54,7 @@ final class ExerciceRespirationController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_exercice_respiration_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, ExerciceRespiration $exerciceRespiration, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(ExerciceRespirationType::class, $exerciceRespiration);
@@ -70,6 +73,7 @@ final class ExerciceRespirationController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_exercice_respiration_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(Request $request, ExerciceRespiration $exerciceRespiration, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$exerciceRespiration->getId(), $request->getPayload()->getString('_token'))) {
@@ -88,9 +92,6 @@ final class ExerciceRespirationController extends AbstractController
         ]);
     }
 
-    // -------------------------------------------------------
-    // EXPORT JSON
-    // -------------------------------------------------------
     #[Route('/export/json', name: 'app_exercice_respiration_export', methods: ['GET'])]
     public function export(ExerciceRespirationRepository $repo): Response
     {
@@ -112,10 +113,8 @@ final class ExerciceRespirationController extends AbstractController
         return $response;
     }
 
-    // -------------------------------------------------------
-    // IMPORT JSON
-    // -------------------------------------------------------
     #[Route('/import/json', name: 'app_exercice_respiration_import', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function import(Request $request, EntityManagerInterface $em): Response
     {
         $uploadedFile = $request->files->get('json_file');
@@ -157,14 +156,12 @@ final class ExerciceRespirationController extends AbstractController
     #[Route('/{id}/export', name: 'app_exercice_respiration_export_one', methods: ['GET'])]
     public function exportOne(ExerciceRespiration $exerciceRespiration): Response
     {
-        $data = [
-            [
-                'nameSeries'      => $exerciceRespiration->getNameSeries(),
-                'timeInspiration' => $exerciceRespiration->getTimeInspiration(),
-                'timeApnea'       => $exerciceRespiration->getTimeApnea(),
-                'timeExpiration'  => $exerciceRespiration->getTimeExpiration(),
-            ]
-        ];
+        $data = [[
+            'nameSeries'      => $exerciceRespiration->getNameSeries(),
+            'timeInspiration' => $exerciceRespiration->getTimeInspiration(),
+            'timeApnea'       => $exerciceRespiration->getTimeApnea(),
+            'timeExpiration'  => $exerciceRespiration->getTimeExpiration(),
+        ]];
 
         $response = new JsonResponse($data);
         $response->headers->set('Content-Disposition', 'attachment; filename="exercice_' . $exerciceRespiration->getId() . '.json"');

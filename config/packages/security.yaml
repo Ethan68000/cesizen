@@ -15,15 +15,14 @@ security:
         main:
             lazy: true
             provider: app_user_provider
+            user_checker: App\Security\UserChecker
             form_login:
                 login_path: app_login
                 check_path: app_login
                 default_target_path: app_home
-                enable_csrf: true
             logout:
                 path: app_logout
-                # where to redirect after logout
-                # target: app_any_route
+                target: app_home
 
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }

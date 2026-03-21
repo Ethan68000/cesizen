@@ -1,40 +1,50 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}ExerciceRespiration{% endblock %}
+{% block title %}{{ exercice_respiration.nameSeries }} — CESIZen{% endblock %}
 
 {% block body %}
-    <h1>ExerciceRespiration</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ exercice_respiration.id }}</td>
-            </tr>
-            <tr>
-                <th>NameSeries</th>
-                <td>{{ exercice_respiration.nameSeries }}</td>
-            </tr>
-            <tr>
-                <th>TimeInspiration</th>
-                <td>{{ exercice_respiration.timeInspiration }}</td>
-            </tr>
-            <tr>
-                <th>TimeApnea</th>
-                <td>{{ exercice_respiration.timeApnea }}</td>
-            </tr>
-            <tr>
-                <th>TimeExpiration</th>
-                <td>{{ exercice_respiration.timeExpiration }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="section-banner text-center">
+        <h1 class="fw-bold fs-2"><i class="bi bi-wind me-2"></i>{{ exercice_respiration.nameSeries }}</h1>
+    </div>
 
-    <a href="{{ path('app_exercice_respiration_index') }}">back to list</a>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card card-cesizen p-4 text-center">
+                <div class="card-body">
+                    <div class="d-flex justify-content-around my-3">
+                        <div>
+                            <span class="d-block fs-2 fw-bold">{{ exercice_respiration.timeInspiration }}s</span>
+                            <small style="opacity:0.75;">Inspiration</small>
+                        </div>
+                        {% if exercice_respiration.timeApnea > 0 %}
+                        <div>
+                            <span class="d-block fs-2 fw-bold">{{ exercice_respiration.timeApnea }}s</span>
+                            <small style="opacity:0.75;">Apnée</small>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <span class="d-block fs-2 fw-bold">{{ exercice_respiration.timeExpiration }}s</span>
+                            <small style="opacity:0.75;">Expiration</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0 d-flex gap-2 justify-content-center flex-wrap">
+                    <a href="{{ path('app_exercice_respiration_index') }}" class="btn btn-cesizen">
+                        <i class="bi bi-arrow-left me-1"></i> Retour à la liste
+                    </a>
+                    <a href="{{ path('app_exercice_respiration_launch', {'id': exercice_respiration.id}) }}" class="btn btn-cesizen-primary">
+                        <i class="bi bi-play-fill me-1"></i> Lancer
+                    </a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_exercice_respiration_edit', {'id': exercice_respiration.id}) }}" class="btn btn-cesizen">
+                            <i class="bi bi-pencil me-1"></i> Modifier
+                        </a>
+                        {{ include('exercice_respiration/_delete_form.html.twig') }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <a href="{{ path('app_exercice_respiration_edit', {'id': exercice_respiration.id}) }}">edit</a>
-
-    <a href="{{ path('app_exercice_respiration_launch', {'id': exercice_respiration.id}) }}">lancer</a>
-
-    {{ include('exercice_respiration/_delete_form.html.twig') }}
 {% endblock %}

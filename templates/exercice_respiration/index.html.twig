@@ -10,7 +10,8 @@
         <p class="mb-0 fs-5">Vous êtes sur la page des exercices, découvrez nos contenus</p>
     </div>
 
-    <!-- Export / Import -->
+    <!-- Export / Import admin seulement -->
+    {% if is_granted('ROLE_ADMIN') %}
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <a href="{{ path('app_exercice_respiration_new') }}" class="btn btn-cesizen-primary">
             <i class="bi bi-plus-circle me-1"></i> Créer un exercice
@@ -27,6 +28,7 @@
             </form>
         </div>
     </div>
+    {% endif %}
 
     <div class="row g-4">
         {% for exercice_respiration in exercice_respirations %}
@@ -57,21 +59,23 @@
                         <i class="bi bi-play-fill me-1"></i> Lancer
                     </a>
                     <a href="{{ path('app_exercice_respiration_show', {id: exercice_respiration.id}) }}" class="btn btn-cesizen btn-sm">
-                        <i class="bi bi-eye me-1"></i> Show
-                    </a>
-                    <a href="{{ path('app_exercice_respiration_edit', {id: exercice_respiration.id}) }}" class="btn btn-cesizen btn-sm">
-                        <i class="bi bi-pencil me-1"></i> Modifier
+                        <i class="bi bi-eye me-1"></i> Voir
                     </a>
                     <a href="{{ path('app_exercice_respiration_export_one', {id: exercice_respiration.id}) }}" class="btn btn-cesizen btn-sm">
                         <i class="bi bi-download me-1"></i> Exporter
                     </a>
-                    <form method="post" action="{{ path('app_exercice_respiration_delete', {id: exercice_respiration.id}) }}"
-                          onsubmit="return confirm('Supprimer cet exercice ?');">
-                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ exercice_respiration.id) }}">
-                        <button type="submit" class="btn btn-danger btn-sm">
-                            <i class="bi bi-trash me-1"></i> Supprimer
-                        </button>
-                    </form>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_exercice_respiration_edit', {id: exercice_respiration.id}) }}" class="btn btn-cesizen btn-sm">
+                            <i class="bi bi-pencil me-1"></i> Modifier
+                        </a>
+                        <form method="post" action="{{ path('app_exercice_respiration_delete', {id: exercice_respiration.id}) }}"
+                              onsubmit="return confirm('Supprimer cet exercice ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ exercice_respiration.id) }}">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash me-1"></i> Supprimer
+                            </button>
+                        </form>
+                    {% endif %}
                 </div>
             </div>
         </div>

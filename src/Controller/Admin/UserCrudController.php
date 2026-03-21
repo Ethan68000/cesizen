@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\User;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
@@ -30,6 +31,7 @@ class UserCrudController extends AbstractCrudController
                     'Administrateur' => 'ROLE_ADMIN',
                 ])
                 ->allowMultipleChoices(),
+            BooleanField::new('isActive', 'Compte actif'),
             DateTimeField::new('birthdate', 'Date de naissance')->hideOnIndex(),
             DateTimeField::new('lastLogin', 'Dernière connexion')->hideOnForm(),
             DateField::new('creationDate', 'Date de création')->hideOnForm(),
