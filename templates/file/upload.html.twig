@@ -4,32 +4,48 @@
 
 {% block body %}
 <div class="row justify-content-center">
-    <div class="col-md-6">
-        <h1 class="h3 fw-bold mb-4">
-            Ajouter un fichier à "{{ informations.title }}"
-        </h1>
+    <div class="col-md-7 col-lg-6">
 
-        {% for type, messages in app.flashes %}
-            {% for message in messages %}
-                <div class="alert alert-{{ type }}">{{ message }}</div>
-            {% endfor %}
-        {% endfor %}
+        <div class="d-flex align-items-center mb-4">
+            <a href="{{ path('app_informations_show', {id: informations.id}) }}" class="btn-cesizen btn me-3">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i> Retour
+            </a>
+            <h1 class="h3 fw-bold mb-0">
+                <i class="bi bi-upload me-2"></i>Ajouter un fichier
+            </h1>
+        </div>
 
-        <div class="card shadow-sm border-0 rounded-4 p-4">
+        <div class="form-cesizen shadow">
+            <p class="text-muted mb-4">
+                Vous ajoutez un fichier à l'information : <strong>{{ informations.title }}</strong>
+            </p>
+
             <form method="post" enctype="multipart/form-data">
                 <input type="hidden" name="_token" value="{{ csrf_token('upload') }}">
-                <div class="mb-3">
-                    <label class="form-label">Fichier</label>
-                    <input type="file" name="file" class="form-control" accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.mp4,.mpeg,.mov,.webm" required>
-                    <small class="text-muted">Formats acceptés : JPEG, PNG, GIF, WEBP, PDF, MP4, MPEG, MOV, WEBM</small>
+
+                <div class="mb-4">
+                    <label for="file" class="form-label fw-bold">
+                        <i class="bi bi-paperclip me-1"></i> Choisir un fichier
+                    </label>
+                    <input type="file"
+                           name="file"
+                           id="file"
+                           class="form-control"
+                           accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.mp4,.mpeg,.mov,.webm"
+                           required
+                           aria-describedby="fileHelp">
+                    <div id="fileHelp" class="form-text text-muted mt-2">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Formats acceptés : JPEG, PNG, GIF, WEBP, PDF, MP4, MPEG, MOV, WEBM
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-success w-100">Uploader</button>
+
+                <button type="submit" class="btn btn-cesizen-primary w-100">
+                    <i class="bi bi-cloud-upload me-2"></i> Uploader le fichier
+                </button>
             </form>
         </div>
 
-        <a href="{{ path('app_informations_show', {id: informations.id}) }}" class="btn btn-outline-secondary mt-3">
-            Retour
-        </a>
     </div>
 </div>
 {% endblock %}

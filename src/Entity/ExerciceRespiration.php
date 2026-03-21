@@ -33,6 +33,12 @@ class ExerciceRespiration
     #[Assert\Positive(message: "L'expiration doit être supérieure à 0.")]
     private ?int $timeExpiration = null;
 
+    #[ORM\Column]
+    private ?bool $isPredefini = null;
+
+    #[ORM\ManyToOne]
+    private ?User $user = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -79,6 +85,30 @@ class ExerciceRespiration
     public function setTimeExpiration(int $timeExpiration): static
     {
         $this->timeExpiration = $timeExpiration;
+        return $this;
+    }
+
+    public function isPredefini(): ?bool
+    {
+        return $this->isPredefini;
+    }
+
+    public function setIsPredefini(bool $isPredefini): static
+    {
+        $this->isPredefini = $isPredefini;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
         return $this;
     }
 }

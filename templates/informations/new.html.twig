@@ -1,11 +1,50 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Informations{% endblock %}
+{% block title %}Créer une information — CESIZen{% endblock %}
 
 {% block body %}
-    <h1>Create new Informations</h1>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
 
-    {{ include('informations/_form.html.twig') }}
+        <div class="d-flex align-items-center mb-4">
+            <a href="{{ path('app_informations_index') }}" class="btn-cesizen btn me-3">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i> Retour
+            </a>
+            <h1 class="h3 fw-bold mb-0">
+                <i class="bi bi-plus-circle" aria-hidden="true"></i>
+                Créer une information
+            </h1>
+        </div>
 
-    <a href="{{ path('app_informations_index') }}">back to list</a>
+        <div class="form-cesizen shadow">
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+            <div class="mb-3">
+                {{ form_label(form.title) }}
+                {{ form_widget(form.title, {'attr': {'class': 'form-control', 'placeholder': 'Titre de l\'information'}}) }}
+                {{ form_errors(form.title) }}
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(form.slug) }}
+                {{ form_widget(form.slug, {'attr': {'class': 'form-control', 'placeholder': 'mon-titre-en-minuscule'}}) }}
+                {{ form_errors(form.slug) }}
+                <small class="text-muted">Identifiant unique sans espaces ni caractères spéciaux.</small>
+            </div>
+
+            <div class="mb-4">
+                {{ form_label(form.description) }}
+                {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 6, 'placeholder': 'Contenu de l\'information...'}}) }}
+                {{ form_errors(form.description) }}
+            </div>
+
+            <button type="submit" class="btn btn-cesizen-primary w-100">
+                <i class="bi bi-check-circle me-2"></i> Créer l'information
+            </button>
+
+            {{ form_end(form) }}
+        </div>
+
+    </div>
+</div>
 {% endblock %}

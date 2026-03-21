@@ -22,6 +22,8 @@ class ExercicePredefiniFixture extends Fixture
             $exercice->setTimeInspiration($inspiration);
             $exercice->setTimeApnea($apnee);
             $exercice->setTimeExpiration($expiration);
+            $exercice->setIsPredefini(true);
+            $exercice->setUser(null);
             $manager->persist($exercice);
         }
 

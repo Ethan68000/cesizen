@@ -17,15 +17,27 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class ExerciceRespirationController extends AbstractController
 {
     #[Route(name: 'app_exercice_respiration_index', methods: ['GET'])]
-    public function index(ExerciceRespirationRepository $exerciceRespirationRepository): Response
+    public function index(ExerciceRespirationRepository $exerciceRespirationRepository, Request $request): Response
     {
+        $predefinis = $exerciceRespirationRepository->findBy(['isPredefini' => true]);
+
+        $mesExercices = [];
+        if ($this->getUser()) {
+            $mesExercices = $exerciceRespirationRepository->findBy([
+                'user'        => $this->getUser(),
+                'isPredefini' => false,
+            ]);
+        } else {
+            $mesExercices = $request->getSession()->get('exercices_session', []);
+        }
+
         return $this->render('exercice_respiration/index.html.twig', [
-            'exercice_respirations' => $exerciceRespirationRepository->findAll(),
+            'exercices_predefinis' => $predefinis,
+            'mes_exercices'        => $mesExercices,
         ]);
     }
 
     #[Route('/new', name: 'app_exercice_respiration_new', methods: ['GET', 'POST'])]
-    #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $exerciceRespiration = new ExerciceRespiration();
@@ -33,15 +45,33 @@ final class ExerciceRespirationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($exerciceRespiration);
-            $entityManager->flush();
+            $exerciceRespiration->setIsPredefini(false);
+
+            if ($this->getUser()) {
+                $exerciceRespiration->setUser($this->getUser());
+                $entityManager->persist($exerciceRespiration);
+                $entityManager->flush();
+                $this->addFlash('success', 'Exercice sauvegardé !');
+            } else {
+                $session = $request->getSession();
+                $exercices = $session->get('exercices_session', []);
+                $exercices[] = [
+                    'id'              => uniqid(),
+                    'nameSeries'      => $exerciceRespiration->getNameSeries(),
+                    'timeInspiration' => $exerciceRespiration->getTimeInspiration(),
+                    'timeApnea'       => $exerciceRespiration->getTimeApnea(),
+                    'timeExpiration'  => $exerciceRespiration->getTimeExpiration(),
+                ];
+                $session->set('exercices_session', $exercices);
+                $this->addFlash('warning', 'Exercice créé temporairement. Connectez-vous pour le sauvegarder !');
+            }
 
             return $this->redirectToRoute('app_exercice_respiration_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('exercice_respiration/new.html.twig', [
             'exercice_respiration' => $exerciceRespiration,
-            'form' => $form,
+            'form'                 => $form,
         ]);
     }
 
@@ -54,28 +84,35 @@ final class ExerciceRespirationController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_exercice_respiration_edit', methods: ['GET', 'POST'])]
-    #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, ExerciceRespiration $exerciceRespiration, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isGranted('ROLE_ADMIN') && $exerciceRespiration->getUser() !== $this->getUser()) {
+            $this->addFlash('danger', 'Vous n\'avez pas accès à cet exercice.');
+            return $this->redirectToRoute('app_exercice_respiration_index');
+        }
+
         $form = $this->createForm(ExerciceRespirationType::class, $exerciceRespiration);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
             return $this->redirectToRoute('app_exercice_respiration_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('exercice_respiration/edit.html.twig', [
             'exercice_respiration' => $exerciceRespiration,
-            'form' => $form,
+            'form'                 => $form,
         ]);
     }
 
     #[Route('/{id}', name: 'app_exercice_respiration_delete', methods: ['POST'])]
-    #[IsGranted('ROLE_ADMIN')]
     public function delete(Request $request, ExerciceRespiration $exerciceRespiration, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isGranted('ROLE_ADMIN') && $exerciceRespiration->getUser() !== $this->getUser()) {
+            $this->addFlash('danger', 'Vous n\'avez pas accès à cet exercice.');
+            return $this->redirectToRoute('app_exercice_respiration_index');
+        }
+
         if ($this->isCsrfTokenValid('delete'.$exerciceRespiration->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($exerciceRespiration);
             $entityManager->flush();
@@ -143,6 +180,7 @@ final class ExerciceRespirationController extends AbstractController
             $exercice->setTimeInspiration((int) $item['timeInspiration']);
             $exercice->setTimeApnea((int) $item['timeApnea']);
             $exercice->setTimeExpiration((int) $item['timeExpiration']);
+            $exercice->setIsPredefini(false);
             $em->persist($exercice);
             $count++;
         }
@@ -167,5 +205,28 @@ final class ExerciceRespirationController extends AbstractController
         $response->headers->set('Content-Disposition', 'attachment; filename="exercice_' . $exerciceRespiration->getId() . '.json"');
 
         return $response;
+    }
+
+    #[Route('/session/launch/{sessionId}', name: 'app_exercice_respiration_launch_session', methods: ['GET'])]
+    public function launchSession(Request $request, string $sessionId): Response
+    {
+        $exercices = $request->getSession()->get('exercices_session', []);
+        $exercice = null;
+
+        foreach ($exercices as $ex) {
+            if ($ex['id'] === $sessionId) {
+                $exercice = $ex;
+                break;
+            }
+        }
+
+        if (!$exercice) {
+            $this->addFlash('danger', 'Exercice introuvable.');
+            return $this->redirectToRoute('app_exercice_respiration_index');
+        }
+
+        return $this->render('exercice_respiration/launch_session.html.twig', [
+            'exercice' => $exercice,
+        ]);
     }
 }

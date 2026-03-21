@@ -3,48 +3,70 @@
 {% block title %}{{ exercice_respiration.nameSeries }} — CESIZen{% endblock %}
 
 {% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
 
-    <div class="section-banner text-center">
-        <h1 class="fw-bold fs-2"><i class="bi bi-wind me-2"></i>{{ exercice_respiration.nameSeries }}</h1>
-    </div>
+        <div class="d-flex align-items-center mb-4">
+            <a href="{{ path('app_exercice_respiration_index') }}" class="btn-cesizen btn me-3">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i> Retour
+            </a>
+            <h1 class="h3 fw-bold mb-0">
+                <i class="bi bi-wind me-2"></i>{{ exercice_respiration.nameSeries }}
+            </h1>
+        </div>
 
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card card-cesizen p-4 text-center">
-                <div class="card-body">
-                    <div class="d-flex justify-content-around my-3">
-                        <div>
-                            <span class="d-block fs-2 fw-bold">{{ exercice_respiration.timeInspiration }}s</span>
-                            <small style="opacity:0.75;">Inspiration</small>
-                        </div>
-                        {% if exercice_respiration.timeApnea > 0 %}
-                        <div>
-                            <span class="d-block fs-2 fw-bold">{{ exercice_respiration.timeApnea }}s</span>
-                            <small style="opacity:0.75;">Apnée</small>
-                        </div>
-                        {% endif %}
-                        <div>
-                            <span class="d-block fs-2 fw-bold">{{ exercice_respiration.timeExpiration }}s</span>
-                            <small style="opacity:0.75;">Expiration</small>
-                        </div>
+        <div class="form-cesizen shadow mb-4">
+            <div class="row text-center g-3">
+                <div class="col-4">
+                    <div class="p-3 rounded" style="background: #e8f4fd;">
+                        <span class="d-block fs-2 fw-bold text-primary">{{ exercice_respiration.timeInspiration }}s</span>
+                        <small class="text-muted fw-600">
+                            <i class="bi bi-arrow-up-circle me-1"></i>Inspiration
+                        </small>
                     </div>
                 </div>
-                <div class="card-footer bg-transparent border-0 d-flex gap-2 justify-content-center flex-wrap">
-                    <a href="{{ path('app_exercice_respiration_index') }}" class="btn btn-cesizen">
-                        <i class="bi bi-arrow-left me-1"></i> Retour à la liste
-                    </a>
-                    <a href="{{ path('app_exercice_respiration_launch', {'id': exercice_respiration.id}) }}" class="btn btn-cesizen-primary">
-                        <i class="bi bi-play-fill me-1"></i> Lancer
-                    </a>
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('app_exercice_respiration_edit', {'id': exercice_respiration.id}) }}" class="btn btn-cesizen">
-                            <i class="bi bi-pencil me-1"></i> Modifier
-                        </a>
-                        {{ include('exercice_respiration/_delete_form.html.twig') }}
-                    {% endif %}
+                <div class="col-4">
+                    <div class="p-3 rounded" style="background: #fef9e7;">
+                        <span class="d-block fs-2 fw-bold text-warning">{{ exercice_respiration.timeApnea }}s</span>
+                        <small class="text-muted">
+                            <i class="bi bi-pause-circle me-1"></i>Apnée
+                        </small>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="p-3 rounded" style="background: #eafaf1;">
+                        <span class="d-block fs-2 fw-bold text-success">{{ exercice_respiration.timeExpiration }}s</span>
+                        <small class="text-muted">
+                            <i class="bi bi-arrow-down-circle me-1"></i>Expiration
+                        </small>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
+            <p class="text-center text-muted mt-3 mb-0">
+                <i class="bi bi-arrow-repeat me-1"></i>
+                Durée d'un cycle : <strong>{{ exercice_respiration.timeInspiration + exercice_respiration.timeApnea + exercice_respiration.timeExpiration }}s</strong>
+            </p>
+        </div>
+
+        <div class="d-flex gap-3 flex-wrap justify-content-center">
+            <a href="{{ path('app_exercice_respiration_launch', {id: exercice_respiration.id}) }}" class="btn btn-cesizen-primary">
+                <i class="bi bi-play-fill me-1"></i> Lancer l'exercice
+            </a>
+            {% if is_granted('ROLE_ADMIN') or (app.user and exercice_respiration.user == app.user) %}
+                <a href="{{ path('app_exercice_respiration_edit', {id: exercice_respiration.id}) }}" class="btn btn-cesizen">
+                    <i class="bi bi-pencil me-1"></i> Modifier
+                </a>
+                <form method="post" action="{{ path('app_exercice_respiration_delete', {id: exercice_respiration.id}) }}"
+                      onsubmit="return confirm('Supprimer cet exercice ?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ exercice_respiration.id) }}">
+                    <button type="submit" class="btn btn-cesizen-danger">
+                        <i class="bi bi-trash me-1"></i> Supprimer
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
 {% endblock %}

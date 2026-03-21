@@ -1,13 +1,60 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit ExerciceRespiration{% endblock %}
+{% block title %}Modifier {{ exercice_respiration.nameSeries }} — CESIZen{% endblock %}
 
 {% block body %}
-    <h1>Edit ExerciceRespiration</h1>
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
 
-    {{ include('exercice_respiration/_form.html.twig', {'button_label': 'Update'}) }}
+        <div class="d-flex align-items-center mb-4">
+            <a href="{{ path('app_exercice_respiration_index') }}" class="btn-cesizen btn me-3">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i> Retour
+            </a>
+            <h1 class="h3 fw-bold mb-0">
+                <i class="bi bi-pencil" aria-hidden="true"></i>
+                Modifier l'exercice
+            </h1>
+        </div>
 
-    <a href="{{ path('app_exercice_respiration_index') }}">back to list</a>
+        <div class="form-cesizen shadow">
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 
-    {{ include('exercice_respiration/_delete_form.html.twig') }}
+            <div class="mb-3">
+                {{ form_label(form.nameSeries) }}
+                {{ form_widget(form.nameSeries, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.nameSeries) }}
+            </div>
+
+            <p class="text-muted small mb-3">
+                <i class="bi bi-info-circle"></i>
+                Durées en secondes. Mettez <strong>0</strong> pour l'apnée si non souhaitée.
+            </p>
+
+            <div class="row g-3 mb-4">
+                <div class="col-4">
+                    {{ form_label(form.timeInspiration) }}
+                    {{ form_widget(form.timeInspiration, {'attr': {'class': 'form-control', 'min': 1}}) }}
+                    {{ form_errors(form.timeInspiration) }}
+                </div>
+                <div class="col-4">
+                    {{ form_label(form.timeApnea) }}
+                    {{ form_widget(form.timeApnea, {'attr': {'class': 'form-control', 'min': 0}}) }}
+                    {{ form_errors(form.timeApnea) }}
+                </div>
+                <div class="col-4">
+                    {{ form_label(form.timeExpiration) }}
+                    {{ form_widget(form.timeExpiration, {'attr': {'class': 'form-control', 'min': 1}}) }}
+                    {{ form_errors(form.timeExpiration) }}
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-cesizen-primary w-100">
+                <i class="bi bi-check-circle me-2"></i> Enregistrer les modifications
+            </button>
+
+            {{ form_end(form) }}
+        </div>
+
+    </div>
+</div>
 {% endblock %}
