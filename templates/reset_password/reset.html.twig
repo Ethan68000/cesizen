@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réinitialiser le mot de passe — CESIZen{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+
+        <div class="text-center mb-4">
+            <i class="bi bi-shield-lock-fill display-4 text-white"></i>
+            <h1 class="h3 fw-bold text-white mt-2">Nouveau mot de passe</h1>
+            <p class="text-white-50">Choisissez un nouveau mot de passe sécurisé.</p>
+        </div>
+
+        <div class="form-cesizen shadow">
+            {{ form_start(resetForm) }}
+                <div class="mb-4">
+                    {{ form_label(resetForm.plainPassword) }}
+                    {{ form_widget(resetForm.plainPassword, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(resetForm.plainPassword) }}
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        12 caractères minimum, 1 majuscule, 1 minuscule, 1 chiffre, 1 caractère spécial.
+                    </small>
+                </div>
+
+                <button class="btn btn-cesizen-primary w-100">
+                    <i class="bi bi-check-circle me-2"></i> Réinitialiser le mot de passe
+                </button>
+            {{ form_end(resetForm) }}
+        </div>
+
+        <div class="text-center mt-3">
+            <a href="{{ path('app_login') }}" class="text-white">
+                <i class="bi bi-arrow-left me-1"></i> Retour à la connexion
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
