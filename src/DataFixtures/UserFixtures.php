@@ -32,7 +32,7 @@ class UserFixtures extends Fixture
         $user->setRoles(['ROLE_USER']);
         $user->setCreationDate(new \DateTime());
         $user->setIsActive(true);
-        $user->setPassword($this->hasher->hashPassword($user, 'UserEthan12+'));
+        $user->setPassword($this->hasher->hashPassword($user, 'UserEthan12++'));
         $manager->persist($user);
 
         $manager->flush();
