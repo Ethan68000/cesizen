@@ -11,7 +11,7 @@
     </div>
 
     <!-- Export / Import admin seulement -->
-    {% if is_granted('ROLE_ADMIN') %}
+    {% if is_granted('ROLE_USER') %}
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div class="d-flex gap-2 align-items-center flex-wrap">
             <a href="{{ path('app_exercice_respiration_export') }}" class="btn btn-cesizen">

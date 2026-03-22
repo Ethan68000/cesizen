@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon espace — CESIZen{% endblock %}
+
+{% block body %}
+
+    <div class="section-banner text-center">
+        <h1 class="fw-bold fs-2">
+            <i class="bi bi-person-circle me-2"></i>Mon espace
+        </h1>
+        <p class="mb-0 fs-5">Bienvenue {{ user.pseudo }} 👋</p>
+    </div>
+
+    <!-- Mon profil -->
+    <h2 class="text-white fw-bold mb-3">
+        <i class="bi bi-person me-2"></i>Mon profil
+    </h2>
+    <div class="form-cesizen shadow mb-5">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="fw-bold">Pseudo</label>
+                <p>{{ user.pseudo }}</p>
+            </div>
+            <div class="col-md-6">
+                <label class="fw-bold">Email</label>
+                <p>{{ user.userIdentifier }}</p>
+            </div>
+            <div class="col-md-6">
+                <label class="fw-bold">Date de création</label>
+                <p>{{ user.creationDate|date('d/m/Y') }}</p>
+            </div>
+            <div class="col-md-6">
+                <label class="fw-bold">Rôle</label>
+                <p>{{ 'ROLE_ADMIN' in user.roles ? 'Administrateur' : 'Utilisateur' }}</p>
+            </div>
+        </div>
+        <div class="d-flex gap-3 mt-3">
+            <a href="{{ path('app_user_edit', {id: user.id}) }}" class="btn btn-cesizen-primary">
+                <i class="bi bi-pencil me-1"></i> Modifier mon profil
+            </a>
+            <form method="post" action="{{ path('app_user_delete') }}"
+                onsubmit="return confirm('Supprimer votre compte ? Cette action est irréversible.');">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete_user') }}">
+                <button type="submit" class="btn btn-cesizen-danger">
+                    <i class="bi bi-trash me-1"></i> Supprimer mon compte
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mes exercices -->
+    <h2 class="text-white fw-bold mb-3">
+        <i class="bi bi-lungs me-2"></i>Mes exercices
+    </h2>
+
+    {% if mesExercices is empty %}
+        <div class="section-banner text-center mb-4">
+            <p class="mb-0">Vous n'avez pas encore créé d'exercice.</p>
+        </div>
+    {% else %}
+        <div class="row g-4 mb-4">
+            {% for exercice in mesExercices %}
+            <div class="col-md-4">
+                <div class="card card-cesizen h-100 p-3">
+                    <div class="card-body text-center">
+                        <i class="bi bi-wind display-4 mb-2"></i>
+                        <h5 class="fw-bold">{{ exercice.nameSeries }}</h5>
+                        <div class="d-flex justify-content-around my-3">
+                            <div>
+                                <span class="d-block fs-4 fw-bold">{{ exercice.timeInspiration }}s</span>
+                                <small style="opacity:0.75;">Inspiration</small>
+                            </div>
+                            {% if exercice.timeApnea > 0 %}
+                            <div>
+                                <span class="d-block fs-4 fw-bold">{{ exercice.timeApnea }}s</span>
+                                <small style="opacity:0.75;">Apnée</small>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <span class="d-block fs-4 fw-bold">{{ exercice.timeExpiration }}s</span>
+                                <small style="opacity:0.75;">Expiration</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 d-flex gap-2 flex-wrap justify-content-center">
+                        <a href="{{ path('app_exercice_respiration_launch', {id: exercice.id}) }}" class="btn btn-cesizen-primary btn-sm">
+                            <i class="bi bi-play-fill me-1"></i> Lancer
+                        </a>
+                        <a href="{{ path('app_exercice_respiration_edit', {id: exercice.id}) }}" class="btn btn-cesizen btn-sm">
+                            <i class="bi bi-pencil me-1"></i> Modifier
+                        </a>
+                        <form method="post" action="{{ path('app_exercice_respiration_delete', {id: exercice.id}) }}"
+                              onsubmit="return confirm('Supprimer cet exercice ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ exercice.id) }}">
+                            <button type="submit" class="btn btn-cesizen-danger btn-sm">
+                                <i class="bi bi-trash me-1"></i> Supprimer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="text-center">
+        <a href="{{ path('app_exercice_respiration_new') }}" class="btn btn-cesizen-primary px-5">
+            <i class="bi bi-plus-circle me-2"></i> Créer un exercice
+        </a>
+    </div>
+
+{% endblock %}

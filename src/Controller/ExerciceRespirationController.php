@@ -130,11 +130,19 @@ final class ExerciceRespirationController extends AbstractController
     }
 
     #[Route('/export/json', name: 'app_exercice_respiration_export', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
     public function export(ExerciceRespirationRepository $repo): Response
     {
-        $exercices = $repo->findAll();
-        $data = [];
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $exercices = $repo->findAll();
+        } else {
+            $exercices = $repo->findBy([
+                'user'        => $this->getUser(),
+                'isPredefini' => false,
+            ]);
+        }
 
+        $data = [];
         foreach ($exercices as $exercice) {
             $data[] = [
                 'nameSeries'      => $exercice->getNameSeries(),
@@ -146,12 +154,11 @@ final class ExerciceRespirationController extends AbstractController
 
         $response = new JsonResponse($data);
         $response->headers->set('Content-Disposition', 'attachment; filename="exercices.json"');
-
         return $response;
     }
 
     #[Route('/import/json', name: 'app_exercice_respiration_import', methods: ['POST'])]
-    #[IsGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_USER')]
     public function import(Request $request, EntityManagerInterface $em): Response
     {
         $uploadedFile = $request->files->get('json_file');
@@ -181,13 +188,13 @@ final class ExerciceRespirationController extends AbstractController
             $exercice->setTimeApnea((int) $item['timeApnea']);
             $exercice->setTimeExpiration((int) $item['timeExpiration']);
             $exercice->setIsPredefini(false);
+            $exercice->setUser($this->getUser());
             $em->persist($exercice);
             $count++;
         }
 
         $em->flush();
         $this->addFlash('success', $count . ' exercice(s) importé(s) avec succès !');
-
         return $this->redirectToRoute('app_exercice_respiration_index');
     }
 
@@ -203,7 +210,6 @@ final class ExerciceRespirationController extends AbstractController
 
         $response = new JsonResponse($data);
         $response->headers->set('Content-Disposition', 'attachment; filename="exercice_' . $exerciceRespiration->getId() . '.json"');
-
         return $response;
     }
 
