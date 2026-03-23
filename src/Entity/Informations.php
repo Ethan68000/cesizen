@@ -34,9 +34,21 @@ class Informations
     #[ORM\OneToMany(targetEntity: File::class, mappedBy: 'informations', orphanRemoval: true)]
     private Collection $files;
 
+    /**
+     * @var Collection<int, Category>
+     */
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'informations')]
+    #[ORM\JoinTable(name: 'informations_category')]
+    private Collection $categories;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $admin = null;
+
     public function __construct()
     {
         $this->files = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -118,6 +130,42 @@ class Informations
                 $file->setInformations(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Category>
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): static
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories->add($category);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): static
+    {
+        $this->categories->removeElement($category);
+
+        return $this;
+    }
+
+    public function getAdmin(): ?User
+    {
+        return $this->admin;
+    }
+
+    public function setAdmin(?User $admin): static
+    {
+        $this->admin = $admin;
 
         return $this;
     }

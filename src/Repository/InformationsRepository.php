@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Category;
 use App\Entity\Informations;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,28 +17,19 @@ class InformationsRepository extends ServiceEntityRepository
         parent::__construct($registry, Informations::class);
     }
 
-    //    /**
-    //     * @return Informations[] Returns an array of Informations objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('i.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Informations
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * Retourne toutes les informations appartenant à une catégorie donnée.
+     *
+     * @return Informations[]
+     */
+    public function findByCategory(Category $category): array
+    {
+        return $this->createQueryBuilder('i')
+            ->innerJoin('i.categories', 'c')
+            ->andWhere('c = :category')
+            ->setParameter('category', $category)
+            ->orderBy('i.creationDate', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

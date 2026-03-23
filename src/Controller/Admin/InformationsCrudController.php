@@ -2,15 +2,16 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Category;
 use App\Entity\Informations;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\SlugField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use Doctrine\ORM\EntityManagerInterface;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 
 class InformationsCrudController extends AbstractCrudController
 {
@@ -26,7 +27,12 @@ class InformationsCrudController extends AbstractCrudController
             TextField::new('title', 'Titre'),
             TextField::new('slug', 'Slug'),
             TextareaField::new('description', 'Description'),
-            DateTimeField::new('creationDate', 'Date de création')->hideOnForm(),
+            AssociationField::new('categories', 'Catégories')
+                ->setFormTypeOptions(['by_reference' => false]),
+            AssociationField::new('admin', 'Auteur (admin)')
+                ->hideOnForm(),
+            DateTimeField::new('creationDate', 'Date de création')
+                ->hideOnForm(),
         ];
     }
 
@@ -34,6 +40,7 @@ class InformationsCrudController extends AbstractCrudController
     {
         if ($entityInstance instanceof Informations) {
             $entityInstance->setCreationDate(new \DateTime());
+            $entityInstance->setAdmin($this->getUser());
         }
         parent::persistEntity($entityManager, $entityInstance);
     }

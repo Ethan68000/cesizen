@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Informations;
 use App\Form\InformationsType;
+use App\Repository\CategoryRepository;
 use App\Repository\InformationsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,10 +17,26 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class InformationsController extends AbstractController
 {
     #[Route(name: 'app_informations_index', methods: ['GET'])]
-    public function index(InformationsRepository $informationsRepository): Response
-    {
+    public function index(
+        Request $request,
+        InformationsRepository $informationsRepository,
+        CategoryRepository $categoryRepository
+    ): Response {
+        $selectedCategoryId = $request->query->getInt('category', 0);
+        $selectedCategory   = null;
+
+        if ($selectedCategoryId > 0) {
+            $selectedCategory = $categoryRepository->find($selectedCategoryId);
+        }
+
+        $informations = $selectedCategory
+            ? $informationsRepository->findByCategory($selectedCategory)
+            : $informationsRepository->findAll();
+
         return $this->render('informations/index.html.twig', [
-            'informations' => $informationsRepository->findAll(),
+            'informations'       => $informations,
+            'categories'         => $categoryRepository->findBy([], ['name' => 'ASC']),
+            'selectedCategoryId' => $selectedCategoryId,
         ]);
     }
 
@@ -33,6 +50,7 @@ final class InformationsController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $information->setCreationDate(new \DateTime());
+            $information->setAdmin($this->getUser());
             $entityManager->persist($information);
             $entityManager->flush();
 
@@ -41,7 +59,7 @@ final class InformationsController extends AbstractController
 
         return $this->render('informations/new.html.twig', [
             'information' => $information,
-            'form' => $form,
+            'form'        => $form,
         ]);
     }
 
@@ -68,7 +86,7 @@ final class InformationsController extends AbstractController
 
         return $this->render('informations/edit.html.twig', [
             'information' => $information,
-            'form' => $form,
+            'form'        => $form,
         ]);
     }
 

@@ -10,6 +10,7 @@
         <p class="mb-0 fs-5">Vous êtes sur la page d'informations, découvrez nos contenus</p>
     </div>
 
+    <!-- Bouton créer (admin) -->
     {% if is_granted('ROLE_ADMIN') %}
     <div class="mb-4 text-end">
         <a href="{{ path('app_informations_new') }}" class="btn btn-cesizen-primary">
@@ -18,16 +19,58 @@
     </div>
     {% endif %}
 
+    <!-- Filtre par catégorie -->
+    {% if categories is not empty %}
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a href="{{ path('app_informations_index') }}"
+           class="btn btn-sm {{ selectedCategoryId == 0 ? 'btn-light' : 'btn-outline-light' }}">
+            <i class="bi bi-grid me-1"></i> Toutes
+        </a>
+        {% for category in categories %}
+        <a href="{{ path('app_informations_index', {category: category.id}) }}"
+           class="btn btn-sm {{ selectedCategoryId == category.id ? 'btn-light' : 'btn-outline-light' }}">
+            {{ category.name }}
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Liste des informations -->
+    {% if informations is empty %}
+        <div class="text-center py-5" style="opacity: 0.7;">
+            <i class="bi bi-inbox fs-1"></i>
+            <p class="mt-2">Aucune information dans cette catégorie.</p>
+        </div>
+    {% else %}
     <div class="row g-4">
         {% for information in informations %}
         <div class="col-md-4">
             <div class="card card-cesizen h-100 p-3">
                 <div class="card-body">
                     <h5 class="fw-bold">{{ information.title }}</h5>
+
+                    <!-- Badges catégories -->
+                    {% if information.categories is not empty %}
+                    <div class="mb-2 d-flex flex-wrap gap-1">
+                        {% for category in information.categories %}
+                        <a href="{{ path('app_informations_index', {category: category.id}) }}"
+                           class="badge text-decoration-none"
+                           style="background: rgba(255,255,255,0.25); color: #fff;">
+                            {{ category.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
                     <p style="opacity:0.85;">{{ information.description|slice(0, 120) }}...</p>
+
                     <small style="opacity:0.6;">
                         <i class="bi bi-calendar me-1"></i>
                         {{ information.creationDate|date('d/m/Y') }}
+                        {% if information.admin %}
+                            &nbsp;·&nbsp;
+                            <i class="bi bi-person me-1"></i>{{ information.admin.pseudo }}
+                        {% endif %}
                     </small>
                 </div>
                 <div class="card-footer bg-transparent border-0 d-flex gap-2 flex-wrap">
@@ -51,5 +94,6 @@
         </div>
         {% endfor %}
     </div>
+    {% endif %}
 
 {% endblock %}

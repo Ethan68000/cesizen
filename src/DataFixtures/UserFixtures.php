@@ -9,6 +9,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserFixtures extends Fixture
 {
+    public const ADMIN_REF = 'user-admin';
+
     public function __construct(
         private UserPasswordHasherInterface $hasher
     ) {}
@@ -24,6 +26,7 @@ class UserFixtures extends Fixture
         $admin->setIsActive(true);
         $admin->setPassword($this->hasher->hashPassword($admin, 'AdminAdmin12+'));
         $manager->persist($admin);
+        $this->addReference(self::ADMIN_REF, $admin);
 
         // User simple
         $user = new User();
