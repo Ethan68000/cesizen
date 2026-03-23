@@ -24,6 +24,7 @@ class RegistrationController extends AbstractController
             $user->setPassword($hasher->hashPassword($user, $form->get('plainPassword')->getData()));
             $user->setRoles(['ROLE_USER']);
             $user->setCreationDate(new \DateTime());
+            $user->setIsActive(true);
             $em->persist($user);
             $em->flush();
 
