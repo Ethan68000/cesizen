@@ -25,6 +25,8 @@ jobs:
   tests:
     name: 🧪 Tests PHPUnit
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "mysql://root:root@127.0.0.1:3306/cesizen_test?serverVersion=8.0&charset=utf8mb4"
     services:
       db:
         image: mysql:8.0
@@ -47,8 +49,6 @@ jobs:
           coverage: xdebug
       - run: composer install --no-interaction --no-progress
       - name: Setup test database
-        env:
-          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/cesizen_test?serverVersion=8.0"
         run: |
           php bin/console doctrine:database:create --env=test
           php bin/console doctrine:migrations:migrate --env=test --no-interaction
