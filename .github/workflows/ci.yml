@@ -54,7 +54,7 @@ jobs:
           php bin/console doctrine:migrations:migrate --env=test --no-interaction
           php bin/console doctrine:fixtures:load --env=test --no-interaction
       - run: vendor/bin/phpunit --coverage-clover coverage.xml
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v7
         with:
           files: ./coverage.xml
 
