@@ -32,4 +32,12 @@ class InformationsRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findInformationsOrderByDate(): array
+    {
+        return $this->createQueryBuilder('i')
+            ->orderBy('i.creationDate', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

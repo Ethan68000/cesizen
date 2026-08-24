@@ -31,7 +31,7 @@ final class InformationsController extends AbstractController
 
         $informations = $selectedCategory
             ? $informationsRepository->findByCategory($selectedCategory)
-            : $informationsRepository->findAll();
+            : $informationsRepository->findInformationsOrderByDate();
 
         return $this->render('informations/index.html.twig', [
             'informations'       => $informations,
