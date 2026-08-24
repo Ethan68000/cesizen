@@ -46,9 +46,13 @@ jobs:
           extensions: pdo_mysql, zip
           coverage: xdebug
       - run: composer install --no-interaction --no-progress
-      - run: php bin/console doctrine:database:create --env=test
-      - run: php bin/console doctrine:migrations:migrate --env=test --no-interaction
-      - run: php bin/console doctrine:fixtures:load --env=test --no-interaction
+      - name: Setup test database
+        env:
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/cesizen_test?serverVersion=8.0"
+        run: |
+          php bin/console doctrine:database:create --env=test
+          php bin/console doctrine:migrations:migrate --env=test --no-interaction
+          php bin/console doctrine:fixtures:load --env=test --no-interaction
       - run: vendor/bin/phpunit --coverage-clover coverage.xml
       - uses: codecov/codecov-action@v4
         with:
