@@ -13,6 +13,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
+/**
+ * @extends AbstractCrudController<Informations>
+ */
+
 class InformationsCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
@@ -39,8 +43,13 @@ class InformationsCrudController extends AbstractCrudController
     public function persistEntity(EntityManagerInterface $entityManager, mixed $entityInstance): void
     {
         if ($entityInstance instanceof Informations) {
+            $admin = $this->getUser();
+            if (!$admin instanceof User) {
+                throw $this->createAccessDeniedException();
+            }
+
             $entityInstance->setCreationDate(new \DateTime());
-            $entityInstance->setAdmin($this->getUser());
+            $entityInstance->setAdmin($admin);
         }
         parent::persistEntity($entityManager, $entityInstance);
     }
