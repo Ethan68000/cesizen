@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\ExerciceRespiration;
+use App\Entity\User;
 use App\Form\ExerciceRespirationType;
 use App\Repository\ExerciceRespirationRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -48,7 +49,11 @@ final class ExerciceRespirationController extends AbstractController
             $exerciceRespiration->setIsPredefini(false);
 
             if ($this->getUser()) {
-                $exerciceRespiration->setUser($this->getUser());
+                $user = $this->getUser();
+                if (!$user instanceof User) {
+                    throw $this->createAccessDeniedException();
+                }
+                $exerciceRespiration->setUser($user);
                 $entityManager->persist($exerciceRespiration);
                 $entityManager->flush();
                 $this->addFlash('success', 'Exercice sauvegardé !');
@@ -161,6 +166,11 @@ final class ExerciceRespirationController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function import(Request $request, EntityManagerInterface $em): Response
     {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
         $uploadedFile = $request->files->get('json_file');
 
         if (!$uploadedFile || $uploadedFile->getClientOriginalExtension() !== 'json') {
@@ -188,7 +198,7 @@ final class ExerciceRespirationController extends AbstractController
             $exercice->setTimeApnea((int) $item['timeApnea']);
             $exercice->setTimeExpiration((int) $item['timeExpiration']);
             $exercice->setIsPredefini(false);
-            $exercice->setUser($this->getUser());
+            $exercice->setUser($user);
             $em->persist($exercice);
             $count++;
         }

@@ -8,6 +8,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
+/**
+ * @extends AbstractCrudController<ExerciceRespiration>
+ */
+
 class ExerciceRespirationCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string

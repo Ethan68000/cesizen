@@ -32,7 +32,12 @@ class InformationsRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-
+    
+    /**
+     * Retourne toutes les informations, triées par date de création décroissante.
+     *
+     * @return Informations[]
+     */
     public function findInformationsOrderByDate(): array
     {
         return $this->createQueryBuilder('i')
