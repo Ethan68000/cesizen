@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Informations;
+use App\Entity\User;
 use App\Form\InformationsType;
 use App\Repository\CategoryRepository;
 use App\Repository\InformationsRepository;
@@ -49,8 +50,13 @@ final class InformationsController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $admin = $this->getUser();
+            if (!$admin instanceof User) {
+                throw $this->createAccessDeniedException();
+            }
+
             $information->setCreationDate(new \DateTime());
-            $information->setAdmin($this->getUser());
+            $information->setAdmin($admin);
             $entityManager->persist($information);
             $entityManager->flush();
 
