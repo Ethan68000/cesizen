@@ -24,3 +24,5 @@ phpstan.neon
 ###< phpstan/phpstan ###
 
 /config/reference.php
+# Docker environment variables (secrets)
+.env.docker
