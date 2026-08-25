@@ -1,0 +1,6 @@
+framework:
+    rate_limiter:
+        ticket_creation:
+            policy: 'fixed_window'
+            limit: 1
+            interval: '10 minutes'
