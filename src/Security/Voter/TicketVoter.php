@@ -7,6 +7,9 @@ use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
+/**
+ * @extends Voter<string, Ticket>
+ */
 class TicketVoter extends Voter
 {
     protected function supports(string $attribute, mixed $subject): bool

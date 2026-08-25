@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Ticket;
 use App\Entity\TicketReply;
+use App\Entity\User;
 use App\Form\TicketReplyType;
 use App\Form\TicketType;
 use App\Repository\TicketRepository;
@@ -24,12 +25,22 @@ class TicketController extends AbstractController
         private RateLimiterFactory $ticketCreationLimiter,
     ) {}
 
+    private function getAuthenticatedUser(): User
+    {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('Utilisateur non authentifié.');
+        }
+
+        return $user;
+    }
+
     #[Route('', name: 'app_ticket_index', methods: ['GET'])]
     public function index(TicketRepository $ticketRepository): Response
     {
         $tickets = $this->isGranted('ROLE_ADMIN')
             ? $ticketRepository->findVisibleForAdmin()
-            : $ticketRepository->findVisibleForUser($this->getUser());
+            : $ticketRepository->findVisibleForUser($this->getAuthenticatedUser());
 
         return $this->render('ticket/index.html.twig', ['tickets' => $tickets]);
     }
@@ -37,14 +48,16 @@ class TicketController extends AbstractController
     #[Route('/nouveau', name: 'app_ticket_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $em, TicketMailer $mailer): Response
     {
+        $user = $this->getAuthenticatedUser();
+
         $ticket = new Ticket();
-        $ticket->setUser($this->getUser());
+        $ticket->setUser($user);
 
         $form = $this->createForm(TicketType::class, $ticket);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $limiter = $this->ticketCreationLimiter->create((string) $this->getUser()->getId());
+            $limiter = $this->ticketCreationLimiter->create((string) $user->getId());
             if (!$limiter->consume(1)->isAccepted()) {
                 $this->addFlash('error', 'Vous devez attendre 10 minutes entre deux demandes.');
                 return $this->redirectToRoute('app_ticket_new');
@@ -74,7 +87,7 @@ class TicketController extends AbstractController
         $form->handleRequest($request);
 
         if (!$ticket->isEstCloture() && $form->isSubmitted() && $form->isValid()) {
-            $reply->setAuthor($this->getUser());
+            $reply->setAuthor($this->getAuthenticatedUser());
             $reply->setIsFromAdmin($isAdmin);
             $ticket->addReply($reply);
             $em->flush();

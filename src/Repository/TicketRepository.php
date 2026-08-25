@@ -17,6 +17,9 @@ class TicketRepository extends ServiceEntityRepository
         parent::__construct($registry, Ticket::class);
     }
 
+    /**
+     * @return array<int, Ticket>
+     */
     public function findVisibleForUser(User $user): array
     {
         $cutoff = new \DateTimeImmutable('-2 days');
@@ -31,6 +34,9 @@ class TicketRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return array<int, Ticket>
+     */
     public function findVisibleForAdmin(): array
     {
         $cutoff = new \DateTimeImmutable('-2 days');

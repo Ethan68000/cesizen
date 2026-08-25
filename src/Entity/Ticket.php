@@ -32,6 +32,9 @@ class Ticket
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $closedAt = null;
 
+    /**
+     * @var Collection<int, TicketReply>
+     */
     #[ORM\OneToMany(mappedBy: 'ticket', targetEntity: TicketReply::class, cascade: ['persist'], orphanRemoval: true)]
     #[ORM\OrderBy(['createdAt' => 'ASC'])]
     private Collection $replies;
@@ -67,6 +70,9 @@ class Ticket
 
     public function getClosedAt(): ?\DateTimeImmutable { return $this->closedAt; }
 
+    /**
+     * @return Collection<int, TicketReply>
+     */
     public function getReplies(): Collection { return $this->replies; }
 
     public function addReply(TicketReply $reply): static
