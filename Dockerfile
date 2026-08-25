@@ -1,4 +1,4 @@
-FROM php:8.4-fpm-alpine AS base
+FROM php:8.5-fpm-alpine AS base
 RUN apk add --no-cache git curl libzip-dev zip unzip mysql-client postgresql-client icu-dev icu-data-full
 RUN docker-php-ext-configure intl \
     && docker-php-ext-install pdo pdo_mysql zip opcache intl
