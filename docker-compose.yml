@@ -4,14 +4,15 @@ services:
     build:
       context: .
       target: production
-    image: ghcr.io/ethan68000/cesizen:latest
+    image: ghcr.io/ethan68000/cesizen:${APP_IMAGE_TAG:-latest}
+    restart: unless-stopped
     volumes:
       - app_public:/var/www/html/public
     environment:
       LOAD_FIXTURES: "true"
       APP_ENV: prod
       APP_DEBUG: "0"
-      DATABASE_URL: "mysql://app:secret@db:3306/app_dev"
+      DATABASE_URL: "mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}?serverVersion=8.0&charset=utf8mb4"
       REDIS_URL: redis://redis:6379
     depends_on:
       db:
@@ -22,6 +23,7 @@ services:
 
   nginx:
     image: nginx:1.25-alpine
+    restart: unless-stopped
     ports:
       - "8080:80"
       - "8443:443"
@@ -29,17 +31,19 @@ services:
       - app_public:/var/www/html/public:ro
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
       - ./docker/nginx/certs:/etc/nginx/certs:ro
-    depends_on: [ app ]
+    depends_on:
+      app:
+        condition: service_started
     networks: [ backend ]
 
   db:
     image: mysql:8.0
     command: --skip-name-resolve
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: app_dev
-      MYSQL_USER: app
-      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
     ports:
@@ -55,21 +59,21 @@ services:
     image: redis:7-alpine
     volumes:
       - redis_data:/data
-    ports:
-      - "6379:6379"
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
+    ports:
+      - "6379:6379"
     networks: [ backend ]
 
   mercure:
     image: dunglas/mercure:v0.16.3
     environment:
       SERVER_NAME: ':3000'
-      MERCURE_PUBLISHER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
-      MERCURE_SUBSCRIBER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
+      MERCURE_PUBLISHER_JWT_KEY: ${MERCURE_JWT_KEY}
+      MERCURE_SUBSCRIBER_JWT_KEY: ${MERCURE_JWT_KEY}
       CORS_ALLOWED_ORIGINS: '*'
       PUBLISH_ALLOWED_ORIGINS: '*'
     ports:
