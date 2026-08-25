@@ -242,6 +242,11 @@
                         </li>
                         {% if app.user %}
                             <li class="nav-item">
+                                <a class="nav-link" href="{{ path('app_ticket_index') }}">
+                                    <i class="bi bi-headset" aria-hidden="true"></i> Tickets
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="{{ path('app_logout') }}">
                                     <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
                                     Déconnexion <span class="fw-bold">({{ app.user.userIdentifier }})</span>
@@ -288,7 +293,12 @@
         </main>
 
         <footer>
-            <p class="mb-0">© 2024 CESIZen — L'application de votre santé mentale</p>
+            <p class="mb-2">© 2024 CESIZen — L'application de votre santé mentale</p>
+            {% if app.user %}
+                <a href="{{ path('app_ticket_new') }}" class="text-white-50">
+                    <i class="bi bi-life-preserver me-1" aria-hidden="true"></i> Besoin d'aide ? Créer un ticket
+                </a>
+            {% endif %}
         </footer>
 
         <!-- Bootstrap JS -->

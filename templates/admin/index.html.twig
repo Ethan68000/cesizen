@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des tickets — Admin{% endblock %}
+
+{% block body %}
+<h1 class="h3 fw-bold mb-4">
+    <i class="bi bi-headset me-2"></i>Gestion des tickets
+</h1>
+
+<div class="table-cesizen shadow">
+    <table class="table table-cesizen mb-0">
+        <thead>
+            <tr>
+                <th>Ticket</th>
+                <th>Utilisateur</th>
+                <th>Statut</th>
+                <th>Créé le</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ticket in tickets %}
+                <tr>
+                    <td>{{ ticket.title }}</td>
+                    <td>{{ ticket.user.email }}</td>
+                    <td>
+                        {% if ticket.estCloture %}
+                            <span class="badge bg-secondary">Clôturé</span>
+                        {% else %}
+                            <span class="badge bg-success">Ouvert</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ ticket.createdAt|date('d/m/Y H:i') }}</td>
+                    <td class="text-end">
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                ...
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="{{ path('app_ticket_show', {id: ticket.id}) }}">
+                                        <i class="bi bi-eye me-2"></i>Consulter
+                                    </a>
+                                </li>
+                                {% if not ticket.estCloture %}
+                                    <li>
+                                        <form method="post" action="{{ path('app_ticket_close', {id: ticket.id}) }}"
+                                              onsubmit="return confirm('Clôturer ce ticket ?');">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('close_ticket_' ~ ticket.id) }}">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="bi bi-check-circle me-2"></i>Clôturer
+                                            </button>
+                                        </form>
+                                    </li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="post" action="{{ path('admin_ticket_delete', {id: ticket.id}) }}"
+                                          onsubmit="return confirm('Supprimer définitivement ce ticket ?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_ticket_' ~ ticket.id) }}">
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="bi bi-trash me-2"></i>Supprimer
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="5" class="text-center text-muted py-3">Aucun ticket.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
