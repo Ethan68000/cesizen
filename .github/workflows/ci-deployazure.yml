@@ -7,17 +7,12 @@ on:
 jobs:
   deploy:
     name: 🚀 Déployer sur la VM Azure
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      - name: Se connecter à la VM et déployer
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.AZURE_VM_HOST }}
-          username: ${{ secrets.AZURE_VM_USER }}
-          key: ${{ secrets.AZURE_VM_SSH_KEY }}
-          script: |
-            cd ~/cesizen
-            git fetch origin main
-            git reset --hard origin/main
-            docker compose --env-file .env.azure -f docker-compose.yml -f docker-compose.azure.yml up -d --build
-            docker compose --env-file .env.azure -f docker-compose.yml -f docker-compose.azure.yml exec -T app php bin/console doctrine:migrations:migrate --no-interaction
+      - name: Déployer avec Docker Compose
+        run: |
+          cd ~/cesizen
+          git fetch origin main
+          git reset --hard origin/main
+          docker compose --env-file .env.azure -f docker-compose.yml -f docker-compose.azure.yml up -d --build
+          docker compose --env-file .env.azure -f docker-compose.yml -f docker-compose.azure.yml exec -T app php bin/console doctrine:migrations:migrate --no-interaction
